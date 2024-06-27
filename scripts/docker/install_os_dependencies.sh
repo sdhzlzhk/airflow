@@ -48,8 +48,8 @@ function get_runtime_apt_deps() {
     if [[ "${RUNTIME_APT_DEPS=}" == "" ]]; then
         RUNTIME_APT_DEPS="apt-transport-https apt-utils ca-certificates \
 curl dumb-init freetds-bin gosu krb5-user \
-ldap-utils libffi7 libldap-2.4-2 libsasl2-2 libsasl2-modules libssl1.1 locales \
-lsb-release netcat openssh-client python3-selinux rsync sasl2-bin sqlite3 sudo unixodbc"
+ldap-utils libffi8 libldap-2.5-0 libsasl2-2 libsasl2-modules libssl3 locales \
+lsb-release netcat-openbsd netcat-traditional openssh-client python3-selinux libc6 rsync sasl2-bin sqlite3 sudo unixodbc"
         export RUNTIME_APT_DEPS
     fi
 }

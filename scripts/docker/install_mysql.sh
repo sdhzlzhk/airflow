@@ -44,14 +44,13 @@ install_mysql_client() {
     echo "${COLOR_BLUE}Installing mysql client version ${MYSQL_VERSION}: ${1}${COLOR_RESET}"
     echo
 
-    local key="467B942D3A79BD29"
+    local key="B7B3B788A8D3785C"
     readonly key
 
     GNUPGHOME="$(mktemp -d)"
     export GNUPGHOME
     set +e
-    for keyserver in $(shuf -e ha.pool.sks-keyservers.net hkp://p80.pool.sks-keyservers.net:80 \
-                               keyserver.ubuntu.com hkp://keyserver.ubuntu.com:80)
+    for keyserver in $(shuf -e hkps://keyserver.ubuntu.com hkps://pgp.surf.nl)
     do
         gpg --keyserver "${keyserver}" --recv-keys "${key}" 2>&1 && break
     done

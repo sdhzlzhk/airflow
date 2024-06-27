@@ -2554,10 +2554,16 @@ class TaskInstance(Base, LoggingMixin):
                     run_id=self.run_id,
                 ),
                 session=session,
-            ).one()
+                skip_locked=True,
+            ).one_or_none()
 
+            if not dag_run:
+                self.log.debug("Skip locked rows, rollback")
+                session.rollback()
+                return
             task = self.task
             if TYPE_CHECKING:
+                assert task
                 assert task.dag
 
             # Get a partial DAG with just the specific tasks we want to examine.

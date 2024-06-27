@@ -106,8 +106,8 @@ function get_runtime_apt_deps() {
     if [[ "${RUNTIME_APT_DEPS=}" == "" ]]; then
         RUNTIME_APT_DEPS="apt-transport-https apt-utils ca-certificates \
 curl dumb-init freetds-bin gosu krb5-user \
-ldap-utils libffi7 libldap-2.4-2 libsasl2-2 libsasl2-modules libssl1.1 locales \
-lsb-release netcat openssh-client python3-selinux rsync sasl2-bin sqlite3 sudo unixodbc"
+ldap-utils libffi8 libldap-2.5-0 libsasl2-2 libsasl2-modules libssl3 locales \
+lsb-release netcat-openbsd netcat-traditional openssh-client python3-selinux libc6 rsync sasl2-bin sqlite3 sudo unixodbc"
         export RUNTIME_APT_DEPS
     fi
 }
@@ -204,14 +204,13 @@ install_mysql_client() {
     echo "${COLOR_BLUE}Installing mysql client version ${MYSQL_VERSION}: ${1}${COLOR_RESET}"
     echo
 
-    local key="467B942D3A79BD29"
+    local key="B7B3B788A8D3785C"
     readonly key
 
     GNUPGHOME="$(mktemp -d)"
     export GNUPGHOME
     set +e
-    for keyserver in $(shuf -e ha.pool.sks-keyservers.net hkp://p80.pool.sks-keyservers.net:80 \
-                               keyserver.ubuntu.com hkp://keyserver.ubuntu.com:80)
+    for keyserver in $(shuf -e hkps://keyserver.ubuntu.com hkps://pgp.surf.nl)
     do
         gpg --keyserver "${keyserver}" --recv-keys "${key}" 2>&1 && break
     done
@@ -602,7 +601,7 @@ function install_airflow() {
         pip install --root-user-action ignore --upgrade --upgrade-strategy eager \
             ${ADDITIONAL_PIP_INSTALL_FLAGS} \
             "${AIRFLOW_INSTALLATION_METHOD}[${AIRFLOW_EXTRAS}]${AIRFLOW_VERSION_SPECIFICATION}" \
-            ${EAGER_UPGRADE_ADDITIONAL_REQUIREMENTS}
+            ${EAGER_UPGRADE_ADDITIONAL_REQUIREMENTS} 
         if [[ -n "${AIRFLOW_INSTALL_EDITABLE_FLAG}" ]]; then
             # Remove airflow and reinstall it using editable flag
             # We can only do it when we install airflow from sources
@@ -1049,7 +1048,8 @@ EOF
 # This is the build image where we build all dependencies
 ##############################################################################################
 FROM ${PYTHON_BASE_IMAGE} as airflow-build-image
-
+RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources
+RUN sed -i 's/security.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources
 # Nolog bash flag is currently ignored - but you can replace it with
 # xtrace - to show commands executed)
 SHELL ["/bin/bash", "-o", "pipefail", "-o", "errexit", "-o", "nounset", "-o", "nolog", "-c"]
