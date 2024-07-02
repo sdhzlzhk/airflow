@@ -74,7 +74,8 @@ FROM scratch as scripts
 # The content below is automatically copied from scripts/docker/install_os_dependencies.sh
 COPY <<"EOF" /install_os_dependencies.sh
 set -euo pipefail
-
+sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources
+sed -i 's/security.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources
 DOCKER_CLI_VERSION=20.10.9
 
 if [[ "$#" != 1 ]]; then
